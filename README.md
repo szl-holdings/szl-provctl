@@ -1,1 +1,20 @@
-Canonical GitHub source for SZLHOLDINGS/szl-provctl. Hub = publish mirror. ATELIER owns Hub cards. Do not treat Hub README as source of truth. Λ = Conjecture 1. Apache-2.0. Copyright 2026 SZL Holdings.
+# szl-provctl
+
+Software kernel slot for provenance control (in-toto / DSSE over SZL receipts). **Not a model. No weights.**
+
+Hub mirror: [`kernels/SZLHOLDINGS/szl-provctl`](https://huggingface.co/kernels/SZLHOLDINGS/szl-provctl). Card: [`SZLHOLDINGS/szl-provctl`](https://huggingface.co/SZLHOLDINGS/szl-provctl). Hologram Space (separate): [`szl-provctl-live`](https://huggingface.co/spaces/SZLHOLDINGS/szl-provctl-live).
+
+## What this is NOT
+
+- Not trained weights
+- Not a complete signing product by itself (see `szl-receipt` + `governed-receipt-spec`)
+- No MEASURED CUDA benches here
+
+## Load
+
+```python
+from kernels import get_kernel
+get_kernel("SZLHOLDINGS/szl-provctl", revision="main", trust_remote_code=True)
+```
+
+Doctrine v11. Λ = Conjecture 1 (advisory, never a theorem). Apache-2.0. Owner: Stephen Lutar / SZL Holdings.
