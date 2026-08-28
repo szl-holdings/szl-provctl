@@ -1,0 +1,11 @@
+{
+  "name": "szl_provctl",
+  "version": "0.1.0",
+  "summary": "Provenance-DAG traversal + supply-chain interop (in-toto v1 / SLSA v1) + per-kernel MEASURED energy for the governed-kernel suite",
+  "license": "Apache-2.0",
+  "universal": true,
+  "requires": [],
+  "doctrine": "proven_trust structurally locked False; Lambda advisory (Conjecture 1, OPEN); energy MEASURED-only (real NVML delta, never fabricated); honest-BLOCKED nodes surfaced in the DAG never dropped; in-toto/SLSA field names spec-exact",
+  "suite": "SZLHOLDINGS/szl-kernels",
+  "interop": "in-toto Statement v1 (https://in-toto.io/Statement/v1); SLSA provenance v1 (https://slsa.dev/provenance/v1); governance predicate https://szl.holdings/governance/v1"
+}
