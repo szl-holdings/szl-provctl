@@ -4,3 +4,6 @@ universal = true
 
 [torch]
 universal = true
+
+[torch-noarch]
+src = "torch-ext/szl_provctl"
