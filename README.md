@@ -6,6 +6,8 @@ Hub mirror: [`kernels/SZLHOLDINGS/szl-provctl`](https://huggingface.co/kernels/S
 
 ## What this is NOT
 
+- Hub `model.joblib` is **QUARANTINED** executable serialization. Do not `joblib.load` it. GitHub source is the approved path.
+
 - Not trained weights
 - Not a complete signing product by itself (see `szl-receipt` + `governed-receipt-spec`)
 - No MEASURED CUDA benches here
