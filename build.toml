@@ -1,0 +1,6 @@
+[general]
+name = "szl_provctl"
+universal = true
+
+[torch]
+universal = true
