@@ -5,6 +5,7 @@ description = "Provenance-DAG control and in-toto / SLSA interop. Software kerne
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.9"
+classifiers = ["Private :: Do Not Upload"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
