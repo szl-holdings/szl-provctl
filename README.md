@@ -56,6 +56,21 @@ get_kernel("SZLHOLDINGS/szl-provctl", revision=hf_revision, trust_remote_code=Tr
 
 A successful load is not a product qualification.
 
+### Where the Kernel Hub revision comes from
+
+`.github/workflows/hf-kernel-publish.yml` in this repository is the only writer of
+[`kernels/SZLHOLDINGS/szl-provctl`](https://huggingface.co/kernels/SZLHOLDINGS/szl-provctl).
+It builds `build/torch-cpu` and `build/torch-universal` from `torch-ext/szl_provctl/` at one
+reviewed GitHub commit, writes the same tree to the kernel repo's `main` and `v1` branches,
+and then loads it in a fresh runner with `get_kernel("SZLHOLDINGS/szl-provctl", version=1,
+trust_remote_code=True)` and compares every served byte with the GitHub source.
+`SZL_KERNEL_SOURCE.json` on the Hub names the GitHub commit each build came from.
+The commit of the kernel repo's `v1` branch after a passing `verify` job is the immutable
+revision to set in `SZL_PROVCTL_HF_REVISION`. `version=1` alone follows the `v1` channel and
+suits development, not a qualified release. The model repo
+[`SZLHOLDINGS/szl-provctl`](https://huggingface.co/SZLHOLDINGS/szl-provctl) is a pointer card
+only; its commits are not kernel revisions.
+
 Doctrine v11. Λ = Conjecture 1 (advisory, never a theorem). Apache-2.0. Owner: Stephen Lutar / SZL Holdings.
 
 ## Source-only development
