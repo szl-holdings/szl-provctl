@@ -26,6 +26,13 @@ from typing import Any, Dict, List, Optional, Tuple
 from ._chain import UnifiedReceiptChain
 
 
+class _MissingDependencyError(ValueError):
+    def __init__(self, node_id: str, dep_id: str) -> None:
+        self.node_id = node_id
+        self.dep_id = dep_id
+        super().__init__(f"declared dependency {dep_id!r} not in DAG")
+
+
 class ProvenanceNode:
     """A DAG node wrapping one UnifiedReceiptChain export.
 
@@ -101,6 +108,11 @@ class ProvenanceDAG:
         """
         from collections import deque
 
+        for n in self._nodes.values():
+            for dep, _h in n.deps:
+                if dep not in self._nodes:
+                    raise _MissingDependencyError(n.node_id, dep)
+
         indeg = {nid: 0 for nid in self._nodes}
         adj: Dict[str, List[str]] = {nid: [] for nid in self._nodes}
         for n in self._nodes.values():
@@ -136,6 +148,20 @@ class ProvenanceDAG:
         """
         try:
             order = self._topo_order()
+        except _MissingDependencyError as exc:
+            return {
+                "ok": False,
+                "node_count": len(self._nodes),
+                "edge_count": sum(len(n.deps) for n in self._nodes.values()),
+                "order": [],
+                "blocked_nodes": [],
+                "first_break": {
+                    "node_id": exc.node_id,
+                    "kind": "missing_dependency",
+                    "detail": str(exc),
+                },
+                "node_results": {},
+            }
         except ValueError as exc:
             return {
                 "ok": False,
