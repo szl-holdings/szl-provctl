@@ -1,0 +1,36 @@
+{
+  "schema": "szl.hf-kernels/v1",
+  "$comment": "Consumed by .github/workflows/hf-kernel-publish.yml via scripts/szl_kernel_publish.py. This repository is the single source for the Hub kernel repo kernels/SZLHOLDINGS/szl-provctl and its model-repo pointer twin.",
+  "kernels": [
+    {
+      "repo_id": "SZLHOLDINGS/szl-provctl",
+      "name": "szl-provctl",
+      "version": 1,
+      "license": "Apache-2.0",
+      "source_repository": "szl-holdings/szl-provctl",
+      "packages": [
+        { "src": "torch-ext/szl_provctl", "name": "szl_provctl" }
+      ],
+      "card": "hf/kernel-card.md",
+      "license_file": "LICENSE",
+      "extra_files": {
+        "NOTICE": "NOTICE"
+      },
+      "prune_paths": [],
+      "python_depends": [],
+      "smoke": "hf/kernel_smoke.py",
+      "model_twin": {
+        "repo_id": "SZLHOLDINGS/szl-provctl",
+        "mode": "pointer",
+        "card": "hf/model-twin-pointer.md",
+        "prune_paths": [
+          "build/",
+          "torch-ext/",
+          "build.toml",
+          "scripts/",
+          "BENCH.laptop-blackwell.json"
+        ]
+      }
+    }
+  ]
+}

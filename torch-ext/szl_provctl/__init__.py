@@ -9,7 +9,7 @@ an ML provenance DAG and verifies every edge, or (c) measures energy PER KERNEL
 bound to a signed-able provenance chain. szl_provctl does all three.
 
     from kernels import get_kernel
-    pc = get_kernel("SZLHOLDINGS/szl-provctl", revision="main", trust_remote_code=True)
+    pc = get_kernel("SZLHOLDINGS/szl-provctl", version=1, trust_remote_code=True)
 
     chain = pc.UnifiedReceiptChain()
     chain.emit("governed_norm", "rms_norm", {"eps": 1e-6})

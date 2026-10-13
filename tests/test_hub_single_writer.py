@@ -19,12 +19,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# No committed writer lives here yet. SZLHOLDINGS/szl-provctl (model and kernel) gets
-# one through the shared szl-holdings/.github reusable-hf-mirror.yml caller
-# (HF upgrade plan P7/D9); add exactly that caller here when it lands. The
-# one-shot joblib quarantine writer was removed once the Hub held no
-# model.joblib; tests/test_no_unsafe_serialization.py still refuses it at source.
-WRITERS: frozenset[str] = frozenset()
+# The one committed writer: hf-kernel-publish.yml publishes the kernel repo
+# kernels/SZLHOLDINGS/szl-provctl (main + v1) over fast-forward-only git and then
+# turns the model repo SZLHOLDINGS/szl-provctl into a pointer card. The workflow binds
+# secrets.HF_TOKEN; scripts/szl_kernel_publish.py is its git transport and names that
+# secret in its credential preflight. The one-shot joblib quarantine writer was removed
+# once the Hub held no model.joblib; tests/test_no_unsafe_serialization.py still
+# refuses it at source.
+WRITERS: frozenset[str] = frozenset({
+    ".github/workflows/hf-kernel-publish.yml",
+    "scripts/szl_kernel_publish.py",
+})
 
 # Executable sources only. Tests, docs and data corpora are not writers.
 EXECUTABLE_SUFFIXES = {".py", ".sh", ".bash", ".ps1", ".js", ".mjs", ".cjs", ".ts", ".yml", ".yaml"}
