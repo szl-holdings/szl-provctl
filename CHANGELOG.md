@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-14
+
+- `ProvenanceDAG.verify_dag()` no longer raises `KeyError` when a node declares a
+  dependency that is not in the DAG. Every declared dependency is checked before the
+  topological sort. A missing one returns `ok=False` with
+  `first_break.kind == "missing_dependency"`, the missing ids (`missing`), the nodes
+  that declared each one (`dependents`), an empty `order` and no `node_results`, so no
+  node is reported as verified in an incomplete graph. Before this, the documented
+  `missing_dependency` result could not be reached. New `missing_dependencies()` lists
+  them; `_topo_order()` raises `MissingDependencyError` (a `ValueError`). Valid DAGs,
+  cycle diagnosis and receipt-chain checks are unchanged.
+
 ## 2026-10-13
 
 - Add the canonical kernel publisher: `.github/workflows/hf-kernel-publish.yml`,
