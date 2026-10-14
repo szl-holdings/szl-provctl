@@ -29,11 +29,13 @@ random.seed(SEED); np.random.seed(SEED)
 T0 = time.time()
 
 # kernel first_break kinds -> our class names.
-# NOTE (measured kernel limitation, honest): the kernel's `missing_dependency`
-# verdict is UNREACHABLE — `_topo_order()` raises KeyError on any ghost edge
-# BEFORE verify_dag's per-edge check runs, so no DAG can be labeled
-# `missing_dependency` through the public API. We therefore do NOT include that
-# class (we never fabricate a code path the kernel cannot actually produce).
+# NOTE (kernel history, honest): when this surrogate was forged, the kernel's
+# `missing_dependency` verdict was UNREACHABLE: `_topo_order()` raised KeyError
+# on any ghost edge before verify_dag's per-edge check ran. The 2026-10-14
+# kernel fix checks every declared dependency before traversal and returns a
+# structured `missing_dependency` break instead. This class map is still the one
+# the v1 surrogate was measured with, so it does NOT include that class; adding
+# it needs a new forge run against the fixed kernel, not an edit here.
 KIND_TO_CLASS = {
     None: "clean",
     "cycle": "cycle",

@@ -26,6 +26,24 @@ from typing import Any, Dict, List, Optional, Tuple
 from ._chain import UnifiedReceiptChain
 
 
+class MissingDependencyError(ValueError):
+    """A node declares a dependency whose node_id is not in the DAG.
+
+    ``missing`` maps each missing node_id to the sorted node_ids that declared
+    it. A graph with a missing node cannot be ordered, so this is raised before
+    any traversal; verify_dag() turns it into a ``missing_dependency`` break.
+    """
+
+    def __init__(self, missing: Dict[Any, List[str]]) -> None:
+        self.missing = missing
+        names = "; ".join(
+            f"{dep!r} needed by {', '.join(repr(d) for d in dependents)}"
+            for dep, dependents in missing.items()
+        )
+        noun = "dependency" if len(missing) == 1 else "dependencies"
+        super().__init__(f"declared {noun} not in DAG: {names}")
+
+
 class ProvenanceNode:
     """A DAG node wrapping one UnifiedReceiptChain export.
 
@@ -93,13 +111,32 @@ class ProvenanceDAG:
         )
         return self
 
+    def missing_dependencies(self) -> Dict[Any, List[str]]:
+        """Declared dependencies that are not nodes of this DAG.
+
+        Returns ``{missing_node_id: [dependent node_ids, sorted]}``, sorted by
+        missing id; ``{}`` when every declared dependency is present.
+        """
+        missing: Dict[Any, set] = {}
+        for n in self._nodes.values():
+            for dep, _h in n.deps:
+                if dep not in self._nodes:
+                    missing.setdefault(dep, set()).add(n.node_id)
+        return {dep: sorted(missing[dep]) for dep in sorted(missing, key=str)}
+
     def _topo_order(self) -> List[str]:
         """Kahn's algorithm; raises on cycle (DAG invariant).
 
         A node ``depends_on`` each dep, i.e. there is an edge dep -> node, so a
-        node's indegree is its number of declared dependencies.
+        node's indegree is its number of declared dependencies. Every declared
+        dependency must be a node: if one is missing this raises
+        MissingDependencyError (a ValueError) before traversal starts.
         """
         from collections import deque
+
+        missing = self.missing_dependencies()
+        if missing:
+            raise MissingDependencyError(missing)
 
         indeg = {nid: 0 for nid in self._nodes}
         adj: Dict[str, List[str]] = {nid: [] for nid in self._nodes}
@@ -132,10 +169,37 @@ class ProvenanceDAG:
             first_break: {node_id, kind, detail} | None,
             node_results: {node_id: {chain_ok, depth, head, verdict}},
           }
-        kind ∈ {"chain_integrity", "edge_mismatch", "missing_dependency"}.
+        kind ∈ {"chain_integrity", "edge_mismatch", "missing_dependency", "cycle"}.
+
+        A declared dependency that is not in the DAG fails the whole graph
+        before traversal: ok=False, order=[], node_results={}, blocked_nodes
+        still surfaced (sorted), and first_break =
+          {node_id: <first dependent, sorted>, kind: "missing_dependency",
+           detail, missing: [missing ids, sorted],
+           dependents: {missing_id: [dependent ids, sorted]}}.
+        No node is reported as verified when the graph is incomplete.
         """
         try:
             order = self._topo_order()
+        except MissingDependencyError as exc:
+            dependents = exc.missing
+            return {
+                "ok": False,
+                "node_count": len(self._nodes),
+                "edge_count": sum(len(n.deps) for n in self._nodes.values()),
+                "order": [],
+                "blocked_nodes": sorted(
+                    nid for nid, n in self._nodes.items() if n.verdict == "BLOCKED"
+                ),
+                "first_break": {
+                    "node_id": min(d for ds in dependents.values() for d in ds),
+                    "kind": "missing_dependency",
+                    "detail": str(exc),
+                    "missing": list(dependents),
+                    "dependents": dependents,
+                },
+                "node_results": {},
+            }
         except ValueError as exc:
             return {
                 "ok": False,
@@ -171,15 +235,8 @@ class ProvenanceDAG:
                     "detail": f"internal hash-chain broke at receipt #{brk}",
                 }
             # verify each declared edge against the dependency's ACTUAL head
+            # (_topo_order already proved every dep_id is a node)
             for dep_id, asserted in n.deps:
-                if dep_id not in self._nodes:
-                    if first_break is None:
-                        first_break = {
-                            "node_id": nid,
-                            "kind": "missing_dependency",
-                            "detail": f"declared dependency {dep_id!r} not in DAG",
-                        }
-                    continue
                 actual = self._nodes[dep_id].head()
                 if asserted != actual and first_break is None:
                     first_break = {
@@ -234,4 +291,4 @@ class ProvenanceDAG:
         return dag
 
 
-__all__ = ["ProvenanceNode", "ProvenanceDAG"]
+__all__ = ["MissingDependencyError", "ProvenanceNode", "ProvenanceDAG"]
