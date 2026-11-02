@@ -149,6 +149,34 @@ def test_cycle_diagnosis_unchanged():
     }
 
 
+def test_cycle_preserves_blocked_nodes_in_and_outside_cycle():
+    dag = ProvenanceDAG()
+    dag.add_node(_node("z-blocked", deps=["allowed"], verdict="BLOCKED"))
+    dag.add_node(_node("allowed", deps=["z-blocked"]))
+    dag.add_node(_node("a-blocked", verdict="BLOCKED"))
+
+    for candidate in (dag, ProvenanceDAG.from_json(dag.to_json())):
+        res = candidate.verify_dag()
+        assert res["ok"] is False
+        assert res["first_break"] == {
+            "node_id": None, "kind": "cycle", "detail": CYCLE_DETAIL,
+        }
+        assert res["blocked_nodes"] == ["a-blocked", "z-blocked"]
+        assert res["order"] == []
+        assert res["node_results"] == {}
+        assert res["node_count"] == 3
+        assert res["edge_count"] == 2
+
+
+def test_blocked_self_cycle_preserves_verdict():
+    dag = ProvenanceDAG().add_node(_node("self", deps=["self"], verdict="BLOCKED"))
+    res = dag.verify_dag()
+    assert res["ok"] is False
+    assert res["first_break"]["kind"] == "cycle"
+    assert res["blocked_nodes"] == ["self"]
+    assert res["node_results"] == {}
+
+
 def test_missing_dependency_reported_before_cycle():
     dag = ProvenanceDAG()
     dag.add_node(_node("a", deps=["b"]))
