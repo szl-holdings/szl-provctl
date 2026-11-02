@@ -66,8 +66,10 @@ def measure_kernel_energy(
         except Exception:
             pass
 
-    before = _read_nvml_energy_millijoules()
+    # Drain previously queued work before the baseline sample, otherwise its
+    # energy would be attributed to this call.
     _sync()
+    before = _read_nvml_energy_millijoules()
     t0 = time.perf_counter()
     output = fn(*args, **kwargs)
     _sync()
