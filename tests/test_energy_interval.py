@@ -17,7 +17,9 @@ def test_energy_excludes_previously_queued_gpu_work(monkeypatch):
         state["millijoules"] += state["pending"]
         state["pending"] = 0
 
-    def kernel():
+    def kernel(*args, **kwargs):
+        assert args == ("fixture input",)
+        assert kwargs == {"scale": 2}
         state["calls"] += 1
         state["pending"] += 1200
         return "kernel output"
@@ -29,7 +31,10 @@ def test_energy_excludes_previously_queued_gpu_work(monkeypatch):
         state["millijoules"], "fixture GPU counter",
     ))
     chain = UnifiedReceiptChain()
-    result = _energy.measure_kernel_energy(chain, kernel, kernel="example", op="run")
+    result = _energy.measure_kernel_energy(
+        chain, kernel, kernel="example", op="run",
+        args=("fixture input",), kwargs={"scale": 2},
+    )
 
     assert result["output"] == "kernel output"
     assert state["calls"] == 1
@@ -53,7 +58,12 @@ def test_energy_missing_or_reset_counter_stays_unavailable(monkeypatch, readings
     monkeypatch.setattr(_energy, "_read_nvml_energy_millijoules", lambda: next(counters))
     chain = UnifiedReceiptChain()
 
-    result = _energy.measure_kernel_energy(chain, lambda: 42, kernel="example", op="run")
+    def kernel(*args, **kwargs):
+        assert args == ()
+        assert kwargs == {}
+        return 42
+
+    result = _energy.measure_kernel_energy(chain, kernel, kernel="example", op="run")
 
     assert result["output"] == 42
     assert result["receipt"]["attrs"]["label"] == label
