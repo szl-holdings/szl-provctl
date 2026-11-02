@@ -178,6 +178,10 @@ class ProvenanceDAG:
            detail, missing: [missing ids, sorted],
            dependents: {missing_id: [dependent ids, sorted]}}.
         No node is reported as verified when the graph is incomplete.
+
+        Malformed chain exports are ``chain_integrity`` failures, not empty
+        chains. Only a verified chain has a non-null ``head`` in node_results;
+        edges to an invalid dependency are not compared against its data.
         """
         try:
             order = self._topo_order()
@@ -217,8 +221,23 @@ class ProvenanceDAG:
 
         for nid in order:
             n = self._nodes[nid]
-            head = n.head()
-            chain_ok, depth, brk = UnifiedReceiptChain.verify_json(n.chain_blob)
+            head = None
+            depth = 0
+            detail = None
+            try:
+                records = json.loads(n.chain_blob)
+                if not isinstance(records, list):
+                    raise ValueError("receipt-chain export must be an array")
+                depth = len(records)
+                chain_ok, depth, brk = UnifiedReceiptChain.verify_json(n.chain_blob)
+                if chain_ok:
+                    head = n.head()
+                else:
+                    detail = f"internal hash-chain broke at receipt #{brk}"
+            except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
+                chain_ok = False
+                # Do not include untrusted receipt contents in diagnostics.
+                detail = "malformed receipt-chain export"
             node_results[nid] = {
                 "chain_ok": bool(chain_ok),
                 "depth": int(depth),
@@ -232,12 +251,14 @@ class ProvenanceDAG:
                 first_break = {
                     "node_id": nid,
                     "kind": "chain_integrity",
-                    "detail": f"internal hash-chain broke at receipt #{brk}",
+                    "detail": detail,
                 }
             # verify each declared edge against the dependency's ACTUAL head
             # (_topo_order already proved every dep_id is a node)
             for dep_id, asserted in n.deps:
-                actual = self._nodes[dep_id].head()
+                if not node_results[dep_id]["chain_ok"]:
+                    continue  # its chain_integrity failure already rejects the DAG
+                actual = node_results[dep_id]["head"]
                 if asserted != actual and first_break is None:
                     first_break = {
                         "node_id": nid,
