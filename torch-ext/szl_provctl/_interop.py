@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from typing import Any, Dict, List, Optional
 
 # Spec-exact constants ------------------------------------------------------
@@ -78,6 +79,15 @@ def _normalize_energy(energy: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         raise ValueError("non-MEASURED energy must report joules=None — never fabricated")
     if label == "MEASURED" and joules is None:
         raise ValueError("MEASURED energy must carry a real joule value")
+    if label == "MEASURED":
+        if type(joules) not in (int, float):
+            raise ValueError("MEASURED joules must be a finite non-negative number")
+        try:
+            joules = float(joules)
+        except OverflowError:
+            raise ValueError("MEASURED joules must be a finite non-negative number") from None
+        if not math.isfinite(joules) or joules < 0:
+            raise ValueError("MEASURED joules must be a finite non-negative number")
     return {
         "label": label,
         "joules": (None if joules is None else float(joules)),
