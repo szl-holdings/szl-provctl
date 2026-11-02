@@ -178,6 +178,8 @@ class ProvenanceDAG:
            detail, missing: [missing ids, sorted],
            dependents: {missing_id: [dependent ids, sorted]}}.
         No node is reported as verified when the graph is incomplete.
+        Malformed receipt chains yield a chain_integrity break; their node
+        result has chain_ok=False and head=None, including when depended on.
         """
         try:
             order = self._topo_order()
@@ -217,8 +219,17 @@ class ProvenanceDAG:
 
         for nid in order:
             n = self._nodes[nid]
-            head = n.head()
-            chain_ok, depth, brk = UnifiedReceiptChain.verify_json(n.chain_blob)
+            head, depth, malformed = None, 0, None
+            try:
+                records = json.loads(n.chain_blob)
+                if not isinstance(records, list):
+                    raise ValueError("chain must be a JSON array of receipts")
+                depth = len(records)
+                head = records[-1]["digest"] if records else ("0" * 64)
+                chain_ok, depth, brk = UnifiedReceiptChain.verify_json(n.chain_blob)
+            except (ValueError, TypeError, KeyError, IndexError, RecursionError) as exc:
+                chain_ok, head = False, None
+                malformed = f"malformed receipt chain: {exc}"
             node_results[nid] = {
                 "chain_ok": bool(chain_ok),
                 "depth": int(depth),
@@ -232,12 +243,14 @@ class ProvenanceDAG:
                 first_break = {
                     "node_id": nid,
                     "kind": "chain_integrity",
-                    "detail": f"internal hash-chain broke at receipt #{brk}",
+                    "detail": malformed or f"internal hash-chain broke at receipt #{brk}",
                 }
             # verify each declared edge against the dependency's ACTUAL head
             # (_topo_order already proved every dep_id is a node)
             for dep_id, asserted in n.deps:
-                actual = self._nodes[dep_id].head()
+                # Dependencies were already checked in topological order. Do not
+                # parse a malformed parent again while checking a valid child.
+                actual = node_results[dep_id]["head"]
                 if asserted != actual and first_break is None:
                     first_break = {
                         "node_id": nid,
