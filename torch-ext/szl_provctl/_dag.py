@@ -210,7 +210,9 @@ class ProvenanceDAG:
                 "node_count": len(self._nodes),
                 "edge_count": sum(len(n.deps) for n in self._nodes.values()),
                 "order": [],
-                "blocked_nodes": [],
+                "blocked_nodes": sorted(
+                    nid for nid, n in self._nodes.items() if n.verdict == "BLOCKED"
+                ),
                 "first_break": {"node_id": None, "kind": "cycle", "detail": str(exc)},
                 "node_results": {},
             }
