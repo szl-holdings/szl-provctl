@@ -6,5 +6,5 @@ authors:
   - family-names: Lutar
     given-names: Stephen Paul
 license: Apache-2.0
-url: "https://huggingface.co/SZLHOLDINGS/szl-provctl"
+url: "https://huggingface.co/kernels/SZLHOLDINGS/szl-provctl"
 repository-code: "https://github.com/szl-holdings/szl-provctl"

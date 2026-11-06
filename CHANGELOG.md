@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-11-06
+
+- Packaging: `pyproject.toml` now declares a setuptools build that installs
+  `torch-ext/szl_provctl` as `szl_provctl`, a `test` extra, project URLs and an SPDX
+  license. Before, `pip install -e '.[test]'` installed an empty distribution (no
+  importable module, no `test` extra). Still `Private :: Do Not Upload`.
+- CI supply chain: pytest (CPU contract) and the `kernels` loader (hf-kernel-publish
+  build and verify jobs) install from hash-locked `requirements/ci/*.txt` with
+  `--require-hashes`; `scripts/ci_assert_kernels_version.py` fails a job whose lock and
+  `KERNELS_VERSION` disagree. The chain drift guard runs `szl-evidence-core` from a
+  commit-pinned checkout instead of `pip install git+...`. Dependabot watches
+  `/requirements/ci`. torch from the PyTorch CPU index is still unhashed (follow-up).
+- `tests/test_energy_interval.py` imports the kernel source on its own, so it passes
+  when run alone; `tests/test_ci_requirements.py` keeps the CI locks hashed and in step
+  with the workflow pins.
+- `scripts/forge.py` imports `torch-ext/` (the `build/` copy it read was removed on
+  2026-10-13), records the measured platform instead of a hard-coded host, and stops on
+  a `first_break.kind` outside its class map instead of relabelling it.
+- Docs: the deleted hologram Space link is replaced by its archived source; the README
+  gains install/verify commands, the proof boundary and the Hub publication status; the
+  kernel docstrings drop unverified "no other tool does this" claims and state that the
+  NVML energy delta is device-wide (GPU 0). No kernel behaviour changed.
+
 ## 2026-10-14
 
 - `ProvenanceDAG.verify_dag()` no longer raises `KeyError` when a node declares a
