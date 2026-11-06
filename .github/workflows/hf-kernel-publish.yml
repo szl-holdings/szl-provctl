@@ -61,6 +61,8 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.12"
+  # kernels and its dependencies install from the hash-locked requirements/ci/kernels.txt;
+  # scripts/ci_assert_kernels_version.py fails the job if that lock drifts from this pin.
   KERNELS_VERSION: "0.17.2"
   TORCH_VERSION: "2.10.0"
   TORCH_INDEX: https://download.pytorch.org/whl/cpu
@@ -124,7 +126,8 @@ jobs:
       - name: Install CPU torch and the pinned kernels loader
         run: |
           python -m pip install --disable-pip-version-check --index-url "$TORCH_INDEX" "torch==${TORCH_VERSION}"
-          python -m pip install --disable-pip-version-check "kernels==${KERNELS_VERSION}"
+          python -m pip install --disable-pip-version-check --require-hashes -r requirements/ci/kernels.txt
+          python scripts/ci_assert_kernels_version.py
       - name: Build torch-cpu + torch-universal from Git objects
         run: >-
           python scripts/szl_kernel_publish.py build --kernel "$KERNEL" --source "$SOURCE_SHA"
@@ -211,7 +214,8 @@ jobs:
       - name: Fresh consumer environment (CPU torch + kernels==${{ env.KERNELS_VERSION }})
         run: |
           python -m pip install --disable-pip-version-check --index-url "$TORCH_INDEX" "torch==${TORCH_VERSION}"
-          python -m pip install --disable-pip-version-check "kernels==${KERNELS_VERSION}"
+          python -m pip install --disable-pip-version-check --require-hashes -r requirements/ci/kernels.txt
+          python scripts/ci_assert_kernels_version.py
       - name: get_kernel(version=${{ matrix.kernel.version }}) serves the GitHub source
         env:
           KERNELS_CACHE: ${{ runner.temp }}/kcache-version

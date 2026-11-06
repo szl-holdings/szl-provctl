@@ -29,3 +29,24 @@ updates:
       pip:
         patterns:
           - "*"
+
+  # Hash-locked CI tools (requirements/ci/*.txt, compiled with uv --generate-hashes).
+  - package-ecosystem: "pip"
+    directory: "/requirements/ci"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/New_York"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+    groups:
+      pip-ci:
+        patterns:
+          - "*"
+    ignore:
+      # kernels is pinned on purpose with KERNELS_VERSION in hf-kernel-publish.yml
+      # (the publisher uses kernels internals); bump the lock and the env together
+      # by hand. tests/test_ci_requirements.py fails if they disagree.
+      - dependency-name: "kernels"
