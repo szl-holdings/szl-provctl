@@ -25,7 +25,9 @@
 - Docs: the deleted hologram Space link is replaced by its archived source; the README
   gains install/verify commands, the proof boundary and the Hub publication status; the
   kernel docstrings drop unverified "no other tool does this" claims and state that the
-  NVML energy delta is device-wide (GPU 0). No kernel behaviour changed.
+  NVML energy delta is device-wide (GPU 0). `SECURITY.md` scopes the single-writer rule
+  to what this repository controls: the kernel repo, and only the pointer card and pruned
+  paths of the model repo, which other accounts also commit to. No kernel behaviour changed.
 
 ## 2026-10-14
 
