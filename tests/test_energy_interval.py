@@ -1,10 +1,15 @@
 """Per-call energy must exclude work queued before the measured call."""
 from __future__ import annotations
 
+import os
 import sys
 from types import SimpleNamespace
 
 import pytest
+
+# Same bootstrap as the sibling tests, so this file also runs on its own
+# (`pytest tests/test_energy_interval.py`) from a plain checkout.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "torch-ext"))
 
 from szl_provctl import UnifiedReceiptChain
 from szl_provctl import _energy

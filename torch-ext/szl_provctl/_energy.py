@@ -2,12 +2,16 @@
 # © 2026 SZL Holdings · Stephen P. Lutar · ORCID 0009-0001-0110-4173
 """Per-kernel MEASURED energy — bound to kernel identity in the chain.
 
-The gap no leader fills: CodeCarbon measures real joules but at process
-granularity with no provenance binding; NVML's energy counter is device-wide.
-``measure_kernel_energy`` reads the **real NVML cumulative-energy counter delta**
-around a SINGLE kernel call and writes an energy receipt that names the exact
-kernel/op it measured — energy bound to kernel identity, inside the same
+CodeCarbon-style tools measure joules at process granularity with no
+provenance binding. ``measure_kernel_energy`` reads the **real NVML
+cumulative-energy counter delta** around a SINGLE kernel call and writes an
+energy receipt that names the kernel/op it measured, inside the same
 UnifiedReceiptChain.
+
+Boundary: the NVML counter is device-wide and this reads GPU index 0 only, so
+the delta also includes any other work on that GPU during the call (for example
+other processes); it is not isolated to the named kernel. With torch + CUDA,
+previously queued work is drained before the baseline sample.
 
 DOCTRINE (binding): energy is MEASURED-only. No NVML / no GPU =>
 joules=None, label=UNAVAILABLE_NO_NVML. A joule is NEVER fabricated, estimated,

@@ -77,6 +77,7 @@ not resolve here.
   external verifier that will consume them.
 - Treat malformed dependency graphs as failure. Energy is reported only as a real NVML
   measurement; it is unavailable (never estimated) when no measurement backend exists.
+  The NVML delta is device-wide (GPU index 0), not isolated to the measured kernel.
 - `proven_trust` is structurally locked `False`. Lambda uniqueness is Conjecture 1: open
   and advisory, never a theorem.
 - A successful load or `selfcheck()` exercises the programmed assertions only. It is not a

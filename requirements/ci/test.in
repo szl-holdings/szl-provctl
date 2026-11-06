@@ -1,0 +1,4 @@
+# Test runner for .github/workflows/cpu-contract.yml (the kernel itself is stdlib only).
+# Regenerate the hash-locked file after editing:
+#   uv pip compile --generate-hashes --python-version 3.12 requirements/ci/test.in -o requirements/ci/test.txt
+pytest
