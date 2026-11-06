@@ -249,7 +249,7 @@ quarantine = {
   "artifact": "model.joblib",
   "reason": "sklearn/joblib pickle is executable serialization, not an approved load path",
   "approved_load": "torch-ext kernel source",
-  "hub": "SZLHOLDINGS/szl-provctl model.joblib remains Hub residue until a Hub PR with exact parent_commit deletes it",
+  "hub": "This run neither reads nor writes the Hub. A model.joblib on any Hub revision is QUARANTINED residue, never an approved load path (see SECURITY.md).",
 }
 with open(f"{out_dir}/SURROGATE_QUARANTINE.json", "w") as f: json.dump(quarantine, f, indent=2)
 with open(f"{out_dir}/TRAINING_RECEIPT.json", "w") as f:

@@ -22,8 +22,9 @@
   `*.py` under the checkout. With a local `.venv/` they used to fail on third-party
   site-packages text; untracked source files are still scanned.
 - `scripts/forge.py` imports `torch-ext/` (the `build/` copy it read was removed on
-  2026-10-13), records the measured platform instead of a hard-coded host, and stops on
-  a `first_break.kind` outside its class map instead of relabelling it.
+  2026-10-13), records the measured platform instead of a hard-coded host, stops on
+  a `first_break.kind` outside its class map instead of relabelling it, and no longer
+  writes that the Hub still holds `model.joblib`.
 - Docs: the deleted hologram Space link is replaced by its archived source; the README
   gains install/verify commands, the proof boundary and the Hub publication status; the
   kernel docstrings drop unverified "no other tool does this" claims and state that the
