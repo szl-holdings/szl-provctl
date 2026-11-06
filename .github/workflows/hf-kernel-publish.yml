@@ -27,6 +27,11 @@ on:
       - ".github/workflows/hf-kernel-publish.yml"
       - "scripts/szl_kernel_publish.py"
       - "tests/test_szl_kernel_publish.py"
+      # The build/verify jobs install from this lock and assert it; a change to it
+      # alone (e.g. a Dependabot bump) must still build and load both variants.
+      - "requirements/ci/kernels.in"
+      - "requirements/ci/kernels.txt"
+      - "scripts/ci_assert_kernels_version.py"
   release:
     types: [published]
   workflow_dispatch:

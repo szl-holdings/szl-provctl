@@ -11,7 +11,9 @@
   `--require-hashes`; `scripts/ci_assert_kernels_version.py` fails a job whose lock and
   `KERNELS_VERSION` disagree. The chain drift guard runs `szl-evidence-core` from a
   commit-pinned checkout instead of `pip install git+...`. Dependabot watches
-  `/requirements/ci`. torch from the PyTorch CPU index is still unhashed (follow-up).
+  `/requirements/ci`, and a pull request that changes the kernels lock or its guard runs
+  the hf-kernel-publish build check. torch from the PyTorch CPU index is still unhashed
+  (follow-up).
 - `tests/test_energy_interval.py` imports the kernel source on its own, so it passes
   when run alone; `tests/test_ci_requirements.py` keeps the CI locks hashed and in step
   with the workflow pins.
