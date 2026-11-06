@@ -1,11 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "szl-provctl"
 version = "0.1.0"
 description = "Provenance-DAG control and in-toto / SLSA interop. Software kernel, not a trained model."
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.9"
-classifiers = ["Private :: Do Not Upload"]
+authors = [{ name = "Stephen P. Lutar / SZL Holdings" }]
+keywords = ["provenance", "in-toto", "slsa", "receipts", "kernel-hub", "szl-holdings"]
+# Stdlib only. Optional at runtime: torch (tensor_digest), pynvml (energy).
+dependencies = []
+classifiers = [
+  "Private :: Do Not Upload",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security",
+  "Topic :: Software Development :: Build Tools",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/szl-holdings/szl-provctl"
+Source = "https://github.com/szl-holdings/szl-provctl"
+Issues = "https://github.com/szl-holdings/szl-provctl/issues"
+Changelog = "https://github.com/szl-holdings/szl-provctl/blob/main/CHANGELOG.md"
+"Kernel Hub" = "https://huggingface.co/kernels/SZLHOLDINGS/szl-provctl"
+
+# The Kernel Hub package lives in torch-ext/ (kernel-builder layout). A local
+# install exposes the same source as `import szl_provctl`; the Hub build is made
+# by scripts/szl_kernel_publish.py, not by this file.
+[tool.setuptools]
+package-dir = { "" = "torch-ext" }
+packages = ["szl_provctl"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+szl_provctl = ["metadata.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
