@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # © 2026 SZL Holdings · Stephen P. Lutar · ORCID 0009-0001-0110-4173
-"""Provenance-DAG traversal + verification — the open frontier no leader fills.
+"""Provenance-DAG traversal + verification.
 
-SLSA/in-toto define ``resolvedDependencies`` but ship NO tool that recursively
-walks an ML provenance DAG and verifies every edge. szl_provctl does exactly
-that, over linked ``UnifiedReceiptChain`` exports:
+SLSA/in-toto define ``resolvedDependencies``; this module recursively walks a
+provenance DAG of linked ``UnifiedReceiptChain`` exports and verifies every
+edge:
 
   * A node = one chain (a governed run / kernel / gate), identified by its head.
   * An edge = a declared dependency: node B depends on node A, asserting A's head.

@@ -2,11 +2,13 @@
 # © 2026 SZL Holdings · Stephen P. Lutar · ORCID 0009-0001-0110-4173
 """szl_provctl — the interop + provenance-DAG control layer of the governed-kernel series.
 
-The lane the supply-chain leaders leave open. Sigstore/SLSA/in-toto define the
-formats; CodeCarbon measures joules; nobody (verified, 2026) (a) emits a
-governed run as a spec-exact in-toto v1 Statement + SLSA provenance, (b) walks
-an ML provenance DAG and verifies every edge, or (c) measures energy PER KERNEL
-bound to a signed-able provenance chain. szl_provctl does all three.
+Sigstore/SLSA/in-toto define the formats; CodeCarbon-style tools measure
+process-level joules. szl_provctl (a) emits a governed run as an in-toto v1
+Statement and as SLSA provenance v1, (b) walks a provenance DAG of linked
+receipt-chain exports and verifies every edge, and (c) records an NVML energy
+delta around one kernel call in the same receipt chain. No uniqueness and no
+SLSA level are claimed; the chain digest is an integrity fingerprint, not a
+signature.
 
     from kernels import get_kernel
     pc = get_kernel("SZLHOLDINGS/szl-provctl", version=1, trust_remote_code=True)
