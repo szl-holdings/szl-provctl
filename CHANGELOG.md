@@ -15,6 +15,10 @@
 - `tests/test_energy_interval.py` imports the kernel source on its own, so it passes
   when run alone; `tests/test_ci_requirements.py` keeps the CI locks hashed and in step
   with the workflow pins.
+- The pickle/joblib scanners (`scripts/eval.py`, `tests/test_no_unsafe_serialization.py`)
+  read repository source (tracked plus untracked, not git-ignored) instead of every
+  `*.py` under the checkout. With a local `.venv/` they used to fail on third-party
+  site-packages text; untracked source files are still scanned.
 - `scripts/forge.py` imports `torch-ext/` (the `build/` copy it read was removed on
   2026-10-13), records the measured platform instead of a hard-coded host, and stops on
   a `first_break.kind` outside its class map instead of relabelling it.
