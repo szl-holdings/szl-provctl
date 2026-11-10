@@ -3,4 +3,4 @@
 # torch is installed separately from the PyTorch CPU index (not hash-locked yet).
 # Regenerate the hash-locked file after editing:
 #   uv pip compile --generate-hashes --python-version 3.12 requirements/ci/kernels.in -o requirements/ci/kernels.txt
-kernels==0.17.2
+kernels==0.18.2
