@@ -15,7 +15,6 @@ keywords = ["provenance", "in-toto", "slsa", "receipts", "kernel-hub", "szl-hold
 # Stdlib only. Optional at runtime: torch (tensor_digest), pynvml (energy).
 dependencies = []
 classifiers = [
-  "Private :: Do Not Upload",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Topic :: Security",
@@ -45,3 +44,8 @@ szl_provctl = ["metadata.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# Canonical PyPI release path (szl.pypi-release.v2): the release gate verifies
+# the wheel's top-level import names against this list before any publish.
+[tool.szl.release]
+import_names = ["szl_provctl"]

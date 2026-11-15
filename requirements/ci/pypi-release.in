@@ -1,0 +1,5 @@
+# Hash-locked build tooling for the canonical PyPI release path (szl.pypi-release.v2).
+# requirements/ci/pypi-release.txt is compiled from this with
+# pip-compile --generate-hashes; CI installs it with --require-hashes.
+build>=1.2
+twine>=6.1
