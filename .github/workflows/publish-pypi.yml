@@ -37,6 +37,7 @@ on:
       - "src/**"
       - "torch-ext/**"
       - "**/*.py"
+      - "requirements/ci/**"
   push:
     branches: [main]
     paths:
@@ -44,6 +45,7 @@ on:
       - "**/pyproject.toml"
       - ".github/workflows/publish-pypi.yml"
       - ".github/scripts/szl_pypi_release_gate.py"
+      - "requirements/ci/**"
 
 env:
   # name=directory[:github-environment]; separate packages with ';'
