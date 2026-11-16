@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "szl-provctl"
-version = "0.1.2"
+version = "0.1.3"
 description = "Provenance-DAG control and in-toto / SLSA interop. Software kernel, not a trained model."
 readme = "README.md"
 license = "Apache-2.0"
