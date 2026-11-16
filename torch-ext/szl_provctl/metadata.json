@@ -1,6 +1,6 @@
 {
   "name": "szl_provctl",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "summary": "Provenance-DAG traversal + supply-chain interop (in-toto v1 / SLSA v1) + per-kernel MEASURED energy for the governed-kernel suite",
   "license": "Apache-2.0",
   "universal": true,

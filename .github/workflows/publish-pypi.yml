@@ -70,7 +70,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install build tooling
-        run: python -m pip install --disable-pip-version-check --upgrade "build>=1.2" "twine>=6.1"
+        run: python -m pip install --disable-pip-version-check --require-hashes -r requirements/ci/pypi-release.txt
       - name: Release gate (build, verify metadata, bind tag to version)
         id: gate
         run: >-
