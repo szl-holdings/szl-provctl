@@ -38,7 +38,7 @@ def _pins(lock: Path) -> dict:
     return pins
 
 
-@pytest.mark.parametrize("name", ["test", "kernels"])
+@pytest.mark.parametrize("name", ["test", "kernels", "pypi-release"])
 def test_every_ci_lock_line_is_pinned_and_hashed(name):
     pins = _pins(CI_REQ / f"{name}.txt")
     assert pins, f"{name}.txt is empty"
