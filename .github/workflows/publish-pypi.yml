@@ -41,7 +41,7 @@ on:
 
 env:
   # name=directory[:github-environment]; separate packages with ';'
-  SZL_PACKAGES: "PACKAGE=.:pypi"
+  SZL_PACKAGES: "szl-provctl=.:pypi"
 
 permissions: {}
 
