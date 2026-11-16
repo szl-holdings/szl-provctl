@@ -100,14 +100,14 @@ jobs:
           if-no-files-found: error
 
   publish:
-    name: Publish PACKAGE to PyPI (Trusted Publishing)
+    name: Publish szl-provctl to PyPI (Trusted Publishing)
     needs: build
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
       name: pypi
-      url: https://pypi.org/project/PACKAGE/${{ needs.build.outputs.version }}/
+      url: https://pypi.org/project/szl-provctl/${{ needs.build.outputs.version }}/
     permissions:
       id-token: write   # OIDC token for PyPI Trusted Publishing — the only credential
       contents: read
