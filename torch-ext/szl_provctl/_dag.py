@@ -26,6 +26,29 @@ from typing import Any, Dict, List, Optional, Tuple
 from ._chain import UnifiedReceiptChain
 
 
+def _strict_json_loads(blob: str) -> Any:
+    """Reject ambiguous or non-JSON DAG/chain exports at the trust boundary.
+
+    Standard json.loads silently keeps the last duplicate key and accepts
+    NaN/Infinity. Either can erase contradictory evidence before verification.
+    """
+
+    def unique_pairs(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate JSON key in provenance export")
+            out[key] = value
+        return out
+
+    def invalid_constant(_token):
+        raise ValueError("non-finite JSON constant in provenance export")
+
+    return json.loads(
+        blob, object_pairs_hook=unique_pairs, parse_constant=invalid_constant
+    )
+
+
 class MissingDependencyError(ValueError):
     """A node declares a dependency whose node_id is not in the DAG.
 
@@ -71,7 +94,7 @@ class ProvenanceNode:
         self.meta = dict(meta or {})
 
     def head(self) -> str:
-        records = json.loads(self.chain_blob)
+        records = _strict_json_loads(self.chain_blob)
         return records[-1]["digest"] if records else ("0" * 64)
 
 
@@ -227,7 +250,7 @@ class ProvenanceDAG:
             depth = 0
             detail = None
             try:
-                records = json.loads(n.chain_blob)
+                records = _strict_json_loads(n.chain_blob)
                 if not isinstance(records, list):
                     raise ValueError("receipt-chain export must be an array")
                 depth = len(records)
@@ -299,7 +322,7 @@ class ProvenanceDAG:
 
     @staticmethod
     def from_json(blob: str) -> "ProvenanceDAG":
-        data = json.loads(blob)
+        data = _strict_json_loads(blob)
         dag = ProvenanceDAG()
         for nid, n in data.items():
             dag.add_node(
